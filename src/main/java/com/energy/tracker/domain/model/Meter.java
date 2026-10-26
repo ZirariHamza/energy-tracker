@@ -26,4 +26,17 @@ public class Meter {
         readings.add(reading);
     }
 
+    public long consumption(LocalDate from, LocalDate to) {
+        List<Reading> inPeriod = readingsBetween(from, to);
+        if (inPeriod.size() < 2) {
+            throw new IllegalArgumentException("At least two readings are required in the period");
+        }
+        return inPeriod.getLast().index() - inPeriod.getFirst().index();
+    }
+
+    private List<Reading> readingsBetween(LocalDate from, LocalDate to) {
+        return readings.stream()
+                .filter(r -> !r.date().isBefore(from) && !r.date().isAfter(to))
+                .toList();
+    }
 }
