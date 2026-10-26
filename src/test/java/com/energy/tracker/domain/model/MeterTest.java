@@ -76,4 +76,37 @@ public class MeterTest {
         assertThrows(IllegalArgumentException.class,
                 () -> meter.consumption(LocalDate.of(2026, 1, 1), LocalDate.of(2026, 2, 1)));
     }
+
+    @Test
+    void shouldAcceptReadingOnSameDateAsPreviousReading() {
+        Meter meter = new Meter("METER-1");
+        meter.addReading(new Reading(LocalDate.of(2026, 1, 1), 1000));
+
+        assertDoesNotThrow(() -> meter.addReading(new Reading(LocalDate.of(2026, 1, 1), 1010)));
+    }
+
+    @Test
+    void shouldIgnoreReadingsOutsideThePeriod() {
+        Meter meter = new Meter("METER-1");
+        meter.addReading(new Reading(LocalDate.of(2025, 12, 1), 900));
+        meter.addReading(new Reading(LocalDate.of(2026, 1, 1), 1000));
+        meter.addReading(new Reading(LocalDate.of(2026, 2, 1), 1250));
+        meter.addReading(new Reading(LocalDate.of(2026, 3, 1), 1500));
+
+        long consumption = meter.consumption(LocalDate.of(2026, 1, 1), LocalDate.of(2026, 2, 1));
+
+        assertEquals(250, consumption);
+    }
+
+    @Test
+    void shouldRejectPeriodWhereStartIsAfterEnd() {
+        Meter meter = new Meter("METER-1");
+        meter.addReading(new Reading(LocalDate.of(2026, 1, 1), 1000));
+        meter.addReading(new Reading(LocalDate.of(2026, 2, 1), 1250));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> meter.consumption(LocalDate.of(2026, 2, 1), LocalDate.of(2026, 1, 1)));
+
+        assertEquals("Start date must not be after end date", exception.getMessage());
+    }
 }

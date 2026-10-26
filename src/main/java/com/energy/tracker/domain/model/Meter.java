@@ -27,6 +27,9 @@ public class Meter {
     }
 
     public long consumption(LocalDate from, LocalDate to) {
+        if (from.isAfter(to)) {
+            throw new IllegalArgumentException("Start date must not be after end date");
+        }
         List<Reading> inPeriod = readingsBetween(from, to);
         if (inPeriod.size() < 2) {
             throw new IllegalArgumentException("At least two readings are required in the period");
