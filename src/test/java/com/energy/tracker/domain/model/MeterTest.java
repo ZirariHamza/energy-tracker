@@ -1,12 +1,17 @@
 package com.energy.tracker.domain.model;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MeterTest {
+
+    @Test
+    void shouldAcceptZeroIndex() {
+        assertDoesNotThrow(() -> new Reading(LocalDate.of(2026, 1, 1), 0));
+    }
 
     @Test
     void shouldRejectReadingWhenIndexIsLowerThanLastReading(){
