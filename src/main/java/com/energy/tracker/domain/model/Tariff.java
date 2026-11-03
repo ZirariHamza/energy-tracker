@@ -1,4 +1,4 @@
 package com.energy.tracker.domain.model;
 
-public class Tariff {
+public sealed interface Tariff permits BaseTariff {
 }
