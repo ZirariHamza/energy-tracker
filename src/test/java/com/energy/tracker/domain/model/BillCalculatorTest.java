@@ -36,4 +36,15 @@ class BillCalculatorTest {
 
         assertThrows(IllegalArgumentException.class, () -> calculator.compute(tariff, -1));
     }
+
+    @Test
+    void shouldRejectNegativePrice() {
+        assertThrows(IllegalArgumentException.class, () -> new BaseTariff(new BigDecimal("-0.01")));
+    }
+
+    @Test
+    void shouldRejectPeakShareAboveOne() {
+        assertThrows(IllegalArgumentException.class, () -> new PeakOffPeakTariff(
+                new BigDecimal("0.25"), new BigDecimal("0.15"), new BigDecimal("1.01")));
+    }
 }
