@@ -47,4 +47,11 @@ class BillCalculatorTest {
         assertThrows(IllegalArgumentException.class, () -> new PeakOffPeakTariff(
                 new BigDecimal("0.25"), new BigDecimal("0.15"), new BigDecimal("1.01")));
     }
+
+    @Test
+    void shouldRoundHalfUpToTwoDecimals() {
+        Tariff tariff = new BaseTariff(new BigDecimal("0.335"));
+
+        assertEquals(new BigDecimal("0.34"), calculator.compute(tariff, 1));
+    }
 }
