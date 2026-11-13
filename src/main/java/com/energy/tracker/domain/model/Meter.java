@@ -42,4 +42,16 @@ public class Meter {
                 .filter(r -> !r.date().isBefore(from) && !r.date().isAfter(to))
                 .toList();
     }
+
+    public List<Long> consumptions() {
+        List<Long> result = new ArrayList<>();
+        for (int i = 1; i < readings.size(); i++) {
+            result.add(readings.get(i).index() - readings.get(i - 1).index());
+        }
+        return result;
+    }
+
+    public boolean hasAnomaly() {
+        return AnomalyDetector.isAnomaly(consumptions());
+    }
 }

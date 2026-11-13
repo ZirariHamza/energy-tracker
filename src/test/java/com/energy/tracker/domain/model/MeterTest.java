@@ -3,6 +3,7 @@ package com.energy.tracker.domain.model;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -113,5 +114,15 @@ public class MeterTest {
                 () -> meter.consumption(LocalDate.of(2026, 2, 1), LocalDate.of(2026, 1, 1)));
 
         assertEquals("Start date must not be after end date", exception.getMessage());
+    }
+
+    @Test
+    void shouldListConsumptionBetweenConsecutiveReadings() {
+        Meter meter = new Meter("METER-1");
+        meter.addReading(new Reading(LocalDate.of(2026, 1, 1), 1000));
+        meter.addReading(new Reading(LocalDate.of(2026, 2, 1), 1100));
+        meter.addReading(new Reading(LocalDate.of(2026, 3, 1), 1350));
+
+        assertEquals(List.of(100L, 250L), meter.consumptions());
     }
 }
