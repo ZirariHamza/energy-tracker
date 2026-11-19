@@ -6,6 +6,11 @@ public record PeakOffPeakTariff(BigDecimal peakPrice, BigDecimal offPeakPrice, B
         implements Tariff {
 
     public PeakOffPeakTariff {
+
+        if (peakPrice == null || peakPrice.signum() < 0
+                || offPeakPrice == null || offPeakPrice.signum() < 0) {
+            throw new IllegalArgumentException("Prices must be zero or positive");
+        }
         if (peakShare == null
                 || peakShare.compareTo(BigDecimal.ZERO) < 0
                 || peakShare.compareTo(BigDecimal.ONE) > 0) {

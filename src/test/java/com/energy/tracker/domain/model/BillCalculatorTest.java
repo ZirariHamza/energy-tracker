@@ -54,4 +54,17 @@ class BillCalculatorTest {
 
         assertEquals(new BigDecimal("0.34"), calculator.compute(tariff, 1));
     }
+
+    @Test
+    void shouldReturnZeroForZeroConsumption() {
+        Tariff tariff = new BaseTariff(new BigDecimal("0.20"));
+
+        assertEquals(new BigDecimal("0.00"), calculator.compute(tariff, 0));
+    }
+
+    @Test
+    void shouldRejectNegativePeakOffPeakPrice() {
+        assertThrows(IllegalArgumentException.class, () -> new PeakOffPeakTariff(
+                new BigDecimal("-0.25"), new BigDecimal("0.15"), new BigDecimal("0.40")));
+    }
 }

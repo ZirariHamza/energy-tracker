@@ -13,6 +13,10 @@ public class Meter {
         this.id = id;
     }
 
+    public String id() {
+        return id;
+    }
+
     public void addReading(Reading reading) {
         if (reading.date().isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("Reading date cannot be in the future");
