@@ -2,15 +2,20 @@ package com.energy.tracker.application.service;
 
 import com.energy.tracker.application.exception.MeterAlreadyExistsException;
 import com.energy.tracker.application.exception.MeterNotFoundException;
+import com.energy.tracker.domain.model.BillCalculator;
 import com.energy.tracker.domain.model.Meter;
 import com.energy.tracker.domain.model.Reading;
 import com.energy.tracker.domain.port.MeterRepository;
+import com.energy.tracker.domain.model.Tariff;
 
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class MeterService {
 
     private final MeterRepository repository;
+    private final BillCalculator billCalculator = new BillCalculator();
 
     public MeterService(MeterRepository repository) {
         this.repository = repository;
@@ -30,5 +35,10 @@ public class MeterService {
         return repository.save(meter);
     }
 
-
+    public BigDecimal bill(String meterId, LocalDate from, LocalDate to, Tariff tariff) {
+        Meter meter = repository.findById(meterId)
+                .orElseThrow(() -> new MeterNotFoundException(meterId));
+        long consumption = meter.consumption(from, to);
+        return billCalculator.compute(tariff, consumption);
+    }
 }

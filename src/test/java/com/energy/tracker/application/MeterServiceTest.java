@@ -3,6 +3,7 @@ package com.energy.tracker.application;
 import com.energy.tracker.application.exception.MeterAlreadyExistsException;
 import com.energy.tracker.application.exception.MeterNotFoundException;
 import com.energy.tracker.application.service.MeterService;
+import com.energy.tracker.domain.model.BaseTariff;
 import com.energy.tracker.domain.model.Meter;
 import com.energy.tracker.domain.model.Reading;
 import com.energy.tracker.domain.port.MeterRepository;
@@ -12,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -76,5 +78,18 @@ class MeterServiceTest {
         assertThrows(IllegalArgumentException.class,
                 () -> service.addReading("M1", LocalDate.of(2026, 2, 1), 900));
         verify(repository, never()).save(any(Meter.class));
+    }
+
+    @Test
+    void shouldComputeBillFromMeterConsumption() {
+        Meter meter = new Meter("M1");
+        meter.addReading(new Reading(LocalDate.of(2026, 1, 1), 1000));
+        meter.addReading(new Reading(LocalDate.of(2026, 2, 1), 1250));
+        when(repository.findById("M1")).thenReturn(Optional.of(meter));
+
+        BigDecimal bill = service.bill("M1", LocalDate.of(2026, 1, 1), LocalDate.of(2026, 2, 1),
+                new BaseTariff(new BigDecimal("0.20")));
+
+        assertEquals(new BigDecimal("50.00"), bill);
     }
 }
