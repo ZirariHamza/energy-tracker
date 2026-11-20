@@ -28,6 +28,10 @@ public class MeterService {
         return repository.save(new Meter(id));
     }
 
+    public Meter get(String id) {
+        return repository.findById(id).orElseThrow(() -> new MeterNotFoundException(id));
+    }
+
     public Meter addReading(String meterId, LocalDate date, long index) {
         Meter meter = repository.findById(meterId)
                 .orElseThrow(() -> new MeterNotFoundException(meterId));
@@ -40,5 +44,13 @@ public class MeterService {
                 .orElseThrow(() -> new MeterNotFoundException(meterId));
         long consumption = meter.consumption(from, to);
         return billCalculator.compute(tariff, consumption);
+    }
+
+    public long consumption(String meterId, LocalDate from, LocalDate to) {
+        return get(meterId).consumption(from, to);
+    }
+
+    public boolean hasAnomaly(String meterId) {
+        return get(meterId).hasAnomaly();
     }
 }

@@ -92,4 +92,28 @@ class MeterServiceTest {
 
         assertEquals(new BigDecimal("50.00"), bill);
     }
+
+    @Test
+    void shouldReturnConsumptionOfMeter() {
+        Meter meter = new Meter("M1");
+        meter.addReading(new Reading(LocalDate.of(2026, 1, 1), 1000));
+        meter.addReading(new Reading(LocalDate.of(2026, 2, 1), 1250));
+        when(repository.findById("M1")).thenReturn(Optional.of(meter));
+
+        long consumption = service.consumption("M1", LocalDate.of(2026, 1, 1), LocalDate.of(2026, 2, 1));
+
+        assertEquals(250, consumption);
+    }
+
+    @Test
+    void shouldDetectAnomalyOfMeter() {
+        Meter meter = new Meter("M1");
+        meter.addReading(new Reading(LocalDate.of(2026, 1, 1), 1000));
+        meter.addReading(new Reading(LocalDate.of(2026, 2, 1), 1100));
+        meter.addReading(new Reading(LocalDate.of(2026, 3, 1), 1200));
+        meter.addReading(new Reading(LocalDate.of(2026, 4, 1), 1500));
+        when(repository.findById("M1")).thenReturn(Optional.of(meter));
+
+        assertTrue(service.hasAnomaly("M1"));
+    }
 }
