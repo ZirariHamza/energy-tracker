@@ -1,8 +1,12 @@
 package com.energy.tracker.application.service;
 
 import com.energy.tracker.application.exception.MeterAlreadyExistsException;
+import com.energy.tracker.application.exception.MeterNotFoundException;
 import com.energy.tracker.domain.model.Meter;
+import com.energy.tracker.domain.model.Reading;
 import com.energy.tracker.domain.port.MeterRepository;
+
+import java.time.LocalDate;
 
 public class MeterService {
 
@@ -18,4 +22,13 @@ public class MeterService {
         }
         return repository.save(new Meter(id));
     }
+
+    public Meter addReading(String meterId, LocalDate date, long index) {
+        Meter meter = repository.findById(meterId)
+                .orElseThrow(() -> new MeterNotFoundException(meterId));
+        meter.addReading(new Reading(date, index));
+        return repository.save(meter);
+    }
+
+
 }

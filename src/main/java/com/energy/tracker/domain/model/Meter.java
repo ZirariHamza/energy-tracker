@@ -55,6 +55,10 @@ public class Meter {
         return result;
     }
 
+    public List<Reading> readings() {
+        return List.copyOf(readings);
+    }
+
     public boolean hasAnomaly() {
         return AnomalyDetector.isAnomaly(consumptions());
     }
