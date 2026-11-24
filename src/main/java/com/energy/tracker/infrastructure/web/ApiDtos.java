@@ -25,4 +25,7 @@ public final class ApiDtos {
                     .toList());
         }
     }
+
+    public record ErrorResponse(String message) {
+    }
 }

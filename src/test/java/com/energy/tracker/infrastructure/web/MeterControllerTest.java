@@ -1,5 +1,6 @@
 package com.energy.tracker.infrastructure.web;
 
+import com.energy.tracker.application.exception.MeterAlreadyExistsException;
 import com.energy.tracker.application.service.MeterService;
 import com.energy.tracker.domain.model.Meter;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,8 +27,9 @@ class MeterControllerTest {
 
     @BeforeEach
     void setUp() {
-        mvc = MockMvcBuilders.standaloneSetup(new MeterController(meterService)).build();
-    }
+        mvc = MockMvcBuilders.standaloneSetup(new MeterController(meterService))
+                .setControllerAdvice(new ApiExceptionHandler())
+                .build();    }
 
     @Test
     void shouldCreateMeter() throws Exception {
@@ -38,5 +40,16 @@ class MeterControllerTest {
                         .content("{\"id\":\"M1\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value("M1"));
+    }
+
+    @Test
+    void shouldReturnConflictWhenMeterAlreadyExists() throws Exception {
+        when(meterService.createMeter("M1")).thenThrow(new MeterAlreadyExistsException("M1"));
+
+        mvc.perform(post("/api/meters")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\":\"M1\"}"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Meter already exists: M1"));
     }
 }
