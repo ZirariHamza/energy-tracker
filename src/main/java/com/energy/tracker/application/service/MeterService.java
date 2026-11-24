@@ -7,11 +7,13 @@ import com.energy.tracker.domain.model.Meter;
 import com.energy.tracker.domain.model.Reading;
 import com.energy.tracker.domain.port.MeterRepository;
 import com.energy.tracker.domain.model.Tariff;
+import org.springframework.stereotype.Service;
 
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Service
 public class MeterService {
 
     private final MeterRepository repository;

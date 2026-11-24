@@ -14,8 +14,12 @@ public final class BillCalculator {
 
         BigDecimal amount = switch (tariff) {
             case BaseTariff(var pricePerKwh) -> pricePerKwh.multiply(kwh);
-            case PeakOffPeakTariff t -> BigDecimal.ZERO;
-        };
+            case PeakOffPeakTariff(var peakPrice, var offPeakPrice, var peakShare) -> {
+                BigDecimal offPeakShare = BigDecimal.ONE.subtract(peakShare);
+                BigDecimal unitPrice = peakPrice.multiply(peakShare)
+                        .add(offPeakPrice.multiply(offPeakShare));
+                yield unitPrice.multiply(kwh);
+            }        };
 
         return amount.setScale(2, RoundingMode.HALF_UP);
     }
